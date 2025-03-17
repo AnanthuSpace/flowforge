@@ -11,10 +11,10 @@ import {
 import "@xyflow/react/dist/style.css";
 import CustomNode from "./CustomNode";
 import CustomEdge from "./CustomEdge";
-import EditNodeModal from "./EditNodeModal ";
+import EditNodeModal from "./EditNodeModal"; 
+import { toast } from "sonner";
 
 const initialNodes = [];
-
 const initialEdges = [];
 
 const Flow = () => {
@@ -63,6 +63,22 @@ const Flow = () => {
     [setEdges]
   );
 
+  const saveWorkflow = () => {
+    const data = { nodes, edges };
+    localStorage.setItem("workflowData", JSON.stringify(data));
+    toast.success("Workflow saved successfully!")
+  };
+
+  const loadWorkflow = () => {
+    const savedData = JSON.parse(localStorage.getItem("workflowData"));
+    if (savedData) {
+      setNodes(savedData.nodes);
+      setEdges(savedData.edges);
+    } else {
+      toast.error("No workflow data found!");
+    }
+  };
+
   const nodeTypes = {
     custom: (props) => (
       <CustomNode {...props} onDelete={deleteNode} onEdit={editNode} />
@@ -73,12 +89,18 @@ const Flow = () => {
 
   return (
     <div className="w-full h-screen">
-      <button
-        className="px-4 py-2 bg-blue-600 text-white rounded-md m-4"
-        onClick={addNode}
-      >
-        Add Node
-      </button>
+      <div className="flex gap-4 p-4">
+        <button className="px-4 py-2 bg-blue-600 text-white rounded-md" onClick={addNode}>
+          Add Node
+        </button>
+        <button className="px-4 py-2 bg-green-600 text-white rounded-md" onClick={saveWorkflow}>
+          Save Workflow
+        </button>
+        <button className="px-4 py-2 bg-gray-600 text-white rounded-md" onClick={loadWorkflow}>
+          Load Workflow
+        </button>
+      </div>
+
       <ReactFlow
         nodes={nodes}
         edges={edges}
